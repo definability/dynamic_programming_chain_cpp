@@ -1,0 +1,17 @@
+add_library(dynamic_programming_traits)
+target_sources(dynamic_programming_traits PUBLIC FILE_SET CXX_MODULES FILES traits.ixx)
+
+add_library(dynamic_programming_helpers)
+target_sources(dynamic_programming_helpers PUBLIC FILE_SET CXX_MODULES FILES helpers.ixx)
+
+add_library(dynamic_programming_compact)
+target_sources(dynamic_programming_compact PUBLIC FILE_SET CXX_MODULES FILES compact.ixx)
+target_link_libraries(dynamic_programming_compact PRIVATE dynamic_programming_traits dynamic_programming_helpers)
+
+add_library(dynamic_programming_fast)
+target_sources(dynamic_programming_fast PUBLIC FILE_SET CXX_MODULES FILES fast.ixx)
+target_link_libraries(dynamic_programming_fast PRIVATE dynamic_programming_traits dynamic_programming_helpers)
+
+add_library(dynamic_programming)
+target_sources(dynamic_programming PUBLIC FILE_SET CXX_MODULES FILES dynamic_programming.ixx)
+target_link_libraries(dynamic_programming PRIVATE dynamic_programming_traits dynamic_programming_fast dynamic_programming_compact)
