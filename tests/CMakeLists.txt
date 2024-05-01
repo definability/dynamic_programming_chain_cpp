@@ -1,0 +1,13 @@
+add_library(simple_semiring)
+target_sources(simple_semiring PUBLIC FILE_SET CXX_MODULES FILES simple_semiring.ixx)
+
+add_library(operators)
+target_sources(operators PUBLIC FILE_SET CXX_MODULES FILES operators.ixx)
+target_link_libraries(operators)
+
+add_library(dynamic_programming_problems)
+target_sources(dynamic_programming_problems PUBLIC FILE_SET CXX_MODULES FILES dynamic_programming_problems.ixx)
+target_link_libraries(dynamic_programming_problems PRIVATE dynamic_programming)
+
+add_executable(tests min_sum.cpp general.cpp)
+target_link_libraries(tests PRIVATE dynamic_programming_problems operators simple_semiring)

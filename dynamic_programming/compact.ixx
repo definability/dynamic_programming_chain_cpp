@@ -37,7 +37,7 @@ auto calculate_cost(auto&& semiring, auto&& vertices, auto&& edges)
   using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
 
   [[assume(vertices.extent(0) >= 1)]]
-  auto next_node = vertices.extent(0) - Size{1};
+  auto next_node = static_cast<Size>(vertices.extent(0)) - Size{1};
   auto&& next_node_vertices = get_slice(vertices, next_node);
   for (; next_node > 0; --next_node)
   {
@@ -45,7 +45,7 @@ auto calculate_cost(auto&& semiring, auto&& vertices, auto&& edges)
     const auto current_node = next_node - Size{1};
     auto&& current_node_vertices = get_slice(vertices, current_node);
 
-    for (auto label = Size{0}; label < vertices.extent(1); ++label)
+    for (auto label = Size{0}; label < static_cast<Size>(vertices.extent(1)); ++label)
     {
       auto&& current_label_edges = get_slice(edges, current_node, label);
       auto&& inner_product_result = inner_product(
@@ -76,11 +76,13 @@ void calculate_labelling(
   auto&& labelling,
   auto&& cost)
 {
+  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+
   {
-    auto current_node = 0zu;
+    auto current_node = Size{};
     auto&& next_node_vertices = get_slice(vertices, current_node);
-    for (auto current_node_label = 0zu;
-         current_node_label < vertices.extent(1);
+    for (Size current_node_label{};
+         current_node_label < static_cast<Size>(vertices.extent(1));
          ++current_node_label)
     {
       if (next_node_vertices[current_node_label] == cost)
@@ -91,8 +93,8 @@ void calculate_labelling(
     }
   }
 
-  for (auto next_node = 1zu;
-       next_node < vertices.extent(0); ++next_node)
+  for (Size next_node{1};
+       next_node < static_cast<Size>(vertices.extent(0)); ++next_node)
   {
     auto&& next_node_vertices = get_slice(vertices, next_node);
 
@@ -104,8 +106,8 @@ void calculate_labelling(
       edges, current_node, current_node_label);
     auto&& inner_product_result = inner_product(
       semiring, current_label_edges, next_node_vertices);
-    for (auto next_node_label = 0zu;
-         next_node_label < vertices.extent(1); ++next_node_label)
+    for (Size next_node_label{};
+         next_node_label < static_cast<Size>(vertices.extent(1)); ++next_node_label)
     {
       auto&& multiplication_result = semiring.multiplexer(
         current_label_edges[next_node_label],

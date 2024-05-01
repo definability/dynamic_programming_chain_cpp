@@ -8,6 +8,7 @@ Check out the following Medium stories to know more about this project:
 - [Dynamic Programming on Chain Graphs. Part 2: The Solution][medium-part2];
 - [Dynamic Programming on Chain Graphs. Part 3: Preparing for Implementation][medium-part3];
 - [Dynamic Programming on Chain Graphs. Part 4: The Implementation][medium-part4].
+- [Dynamic Programming on Chain Graphs. Part 5: Testing][medium-part5].
 
 ## Build Requirements
 
@@ -92,6 +93,45 @@ can set up a [Docker toolchain][jetbrains-docker-toolchain] by specifying:
 - C++ Compiler `clang++-18`;
 - Debugger: `lldb-18`.
 
+## Running Tests
+
+The project uses [doctest] &mdash; a lightweight testing framework compatible with C++23.
+
+Configure the project
+```shell
+cmake \
+  -S . \
+  -B build \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_FLAGS='-stdlib=libc++ -Wall -Wextra -pedantic'
+```
+Build tests
+```shell
+cmake --build build --target tests
+```
+Run the tests
+```shell
+./build/tests/tests
+```
+
+You can do this in Docker container:
+```shell
+docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) debian-clang:18 bash -c " \
+  cd $(pwd) && \
+  cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=clang++-18 \
+    -DCMAKE_CXX_FLAGS='-stdlib=libc++ -Wall -Wextra -pedantic' && \
+  cmake --build build --target tests && \
+  build/tests/tests \
+"
+```
+
 [attribute-assume]: https://en.cppreference.com/w/cpp/language/attributes/assume
 [clang-18]: https://releases.llvm.org/18.1.0/tools/clang/docs/ReleaseNotes.html
 [clang-cpp-status]: https://clang.llvm.org/cxx_status.html
@@ -104,6 +144,7 @@ can set up a [Docker toolchain][jetbrains-docker-toolchain] by specifying:
 [debian-sid-packages]: https://packages.debian.org/sid/devel/
 [debian-trixie-packages]: https://packages.debian.org/trixie/devel/
 [deducing-this]: https://en.cppreference.com/w/cpp/language/member_functions#Explicit_object_member_functions
+[doctest]: https://github.com/doctest/doctest
 [jetbrains-docker-toolchain]: https://www.jetbrains.com/help/clion/clion-toolchains-in-docker.html
 [libcpp-18]: https://releases.llvm.org/18.1.0/projects/libcxx/docs/ReleaseNotes.html
 [md-subscript-operator]: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2128r5.pdf
@@ -112,4 +153,5 @@ can set up a [Docker toolchain][jetbrains-docker-toolchain] by specifying:
 [medium-part2]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-2-the-solution-37c1bad8570e
 [medium-part3]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-3-preparing-for-implementation-bdceb5bf1345
 [medium-part4]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-4-the-implementation-35b55a528afb
+[medium-part5]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-5-testing-38e0aa01f18b
 [ninja-1.10]: https://github.com/ninja-build/ninja/releases/tag/v1.10.0

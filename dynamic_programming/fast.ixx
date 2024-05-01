@@ -24,10 +24,12 @@ void calculate_labelling(auto&& labelling, auto&& local_best_labels)
 }
 
 export template<
-  std::equality_comparable R, Semiring <R> SpecificSemiring,
+  std::equality_comparable R,
+  Semiring <R> SpecificSemiring,
   typename VerticesExtents,
   typename EdgesExtents,
-  typename Label, std::size_t labelling_extent,
+  typename Label,
+  std::size_t labelling_extent,
   typename LocalBestLabelsExtents
 >
 void dynamic_programming_fast(
@@ -36,7 +38,7 @@ void dynamic_programming_fast(
   const Edges <R, EdgesExtents>& edges,
   const Labelling <Label, labelling_extent>& labelling,
   R& cost,
-  LocalBestLabels<Label, LocalBestLabelsExtents>& local_best_labels
+  const LocalBestLabels<Label, LocalBestLabelsExtents>& local_best_labels
 )
 {
   validate_input(vertices, edges, labelling);
@@ -62,15 +64,17 @@ auto calculate_cost(
   auto&& local_best_labels,
   auto&& labelling)
 {
-  for (auto next_node{vertices.extent(0) - 1}; next_node > 0; --next_node)
+  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+
+  for (auto next_node = static_cast<Size>(vertices.extent(0) - 1); next_node > 0; --next_node)
   {
     auto&& next_node_vertices = get_slice(vertices, next_node);
 
     auto&& current_node = next_node - 1;
     auto&& current_node_vertices = get_slice(vertices, current_node);
 
-    for (auto current_node_label = 0zu;
-         current_node_label < vertices.extent(1); ++current_node_label)
+    for (Size current_node_label{};
+         current_node_label < static_cast<Size>(vertices.extent(1)); ++current_node_label)
     {
       auto&& current_label_edges = get_slice(
         edges, current_node, current_node_label
@@ -82,7 +86,7 @@ auto calculate_cost(
         next_node_vertices[next_node_label]
       );
       local_best_labels[current_node, current_node_label] = next_node_label;
-      while (++next_node_label < vertices.extent(1))
+      while (static_cast<Size>(++next_node_label) < static_cast<Size>(vertices.extent(1)))
       {
         auto&& value = semiring.adder(
           best_result, semiring.multiplexer(
@@ -105,7 +109,7 @@ auto calculate_cost(
   [[assume(next_node_vertices.begin() != next_node_vertices.end())]]
   auto best_result = next_node_vertices[label];
   labelling[0] = label;
-  while (++label < vertices.extent(1))
+  while (static_cast<Size>(++label) < static_cast<Size>(vertices.extent(1)))
   {
     auto&& value = semiring.adder(best_result, next_node_vertices[label]);
     if (value != best_result)

@@ -21,20 +21,22 @@ export void validate_input(auto&& vertices, auto&& edges, auto&& labelling)
   {
     throw std::invalid_argument{"Edges must come from exactly N-1 nodes"};
   }
-  if (labelling.size() != vertices.extent(0))
-  {
-    throw std::invalid_argument{
-      "Labelling must be of the same length as the chain"};
-  }
   if (edges.extent(1) != vertices.extent(1))
   {
     throw std::invalid_argument{
-      "Vertices and edges must have the same number of labels"};
+      "Vertices and get_edges must have the same number of labels"};
   }
   if (edges.extent(1) != edges.extent(2))
   {
     throw std::invalid_argument{
       "Edges must have the same number of input and output labels"};
+  }
+
+  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+  if (labelling.size() != static_cast<Size>(vertices.extent(0)))
+  {
+    throw std::invalid_argument{
+      "Labelling must be of the same length as the chain"};
   }
 }
 
@@ -47,7 +49,7 @@ export auto get_slice(auto&& input_span, auto&&... indices)
   auto&& slice_begin = accessor.offset(begin, offset);
 
   auto&& slice_size = input_span.extent(sizeof...(indices));
-  return std::span{slice_begin, slice_size};
+  return std::span{slice_begin, static_cast<std::size_t>(slice_size)};
 }
 
 export auto inner_product(
