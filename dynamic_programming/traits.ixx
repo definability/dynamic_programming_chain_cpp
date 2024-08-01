@@ -23,7 +23,8 @@ and requires(SpecificSemiring semiring, R& result, R&& multiplier)
 
 export template<typename R, typename Extents> requires(Extents::rank() == 2)
   using Vertices = std::mdspan<R, Extents>;
-export template<typename R, typename Extents> requires(Extents::rank() == 3)
+export template<typename R, typename Extents>
+  requires(Extents::rank() == 2 or Extents::rank() == 3)
   using Edges = std::mdspan<R, Extents>;
 export template<typename Label, std::size_t extent>
   using Labelling = std::span<Label, extent>;

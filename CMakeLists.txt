@@ -7,3 +7,4 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 add_subdirectory(dynamic_programming)
 add_subdirectory(tests)
+add_subdirectory(examples)

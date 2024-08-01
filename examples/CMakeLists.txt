@@ -1,0 +1,7 @@
+add_library(scanline_stereo_vision_solver)
+target_sources(scanline_stereo_vision_solver PUBLIC FILE_SET CXX_MODULES FILES scanline_stereo_vision_solver.ixx)
+target_link_libraries(scanline_stereo_vision_solver PRIVATE dynamic_programming operators simple_semiring)
+
+add_executable(scanline_stereo_vision scanline_stereo_vision.cpp)
+target_include_directories(scanline_stereo_vision PRIVATE ../third_party)
+target_link_libraries(scanline_stereo_vision PRIVATE scanline_stereo_vision_solver)

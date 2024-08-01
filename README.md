@@ -10,6 +10,9 @@ Check out the following Medium stories to know more about this project:
 - [Dynamic Programming on Chain Graphs. Part 4: The Implementation][medium-part4].
 - [Dynamic Programming on Chain Graphs. Part 5: Testing][medium-part5].
 
+A writing about the binocular stereo vision example:
+- [Scanline Stereo Vision][medium-stereo-vision].
+
 ## Build Requirements
 
 The project contains a [Dockerfile][clang18-dockerfile]
@@ -128,7 +131,73 @@ docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
 "
 ```
 
+## Using the Project
+
+Configure the project
+```shell
+cmake \
+  -S . \
+  -B build \
+  -G Ninja \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DCMAKE_CXX_COMPILER=clang++-18 \
+  -DCMAKE_CXX_FLAGS='-stdlib=libc++ -Wall -Wextra -pedantic'
+```
+
+### Scanline Stereo Vision Example
+
+You can get the example inputs from the [Middlebury Stereo Datasets][middlebury].
+
+Build the example
+```shell
+cmake --build build --target scanline_stereo_vision
+```
+Run the example using `view0.png` as the left image and
+`view1.png` as the right image.
+Use the maximum disparity `50` and smoothness weight `25`.
+Compute the disparity map using the "compact" algorithm
+and write the resulting disparity map into `out.png`.
+```shell
+./build/examples/scanline_stereo_vision view0.png view1.png out.png 50 25 compact
+```
+
+You can do this in Docker container:
+```shell
+docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
+  cd $(pwd) && \
+  cmake \
+    -S . \
+    -B build \
+    -G Ninja \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_CXX_COMPILER=clang++-18 \
+    -DCMAKE_CXX_FLAGS='-stdlib=libc++ -Wall -Wextra -pedantic' && \
+  cmake --build build --target scanline_stereo_vision && \
+  build/examples/scanline_stereo_vision view0.png view1.png out.png 50 25 compact \
+"
+```
+
+## Licensing
+
+This project includes the [CImg] library.
+It is provided "as is" under the [CeCILL] license.
+You can find more information about the [CImg] library
+and its licensing terms in the [third_party/CImg] directory.
+Please refer to the [third_party/CImg/Licence_CeCILL_V2-en.txt]
+for the full license text.
+
+The other project parts (the files outside the [third_party] directory)
+are licensed under the [MIT license],
+so you can freely use the source code in pet projects,
+commercial projects, and home assignments.
+You can also modify it, distribute it, and sell it.
+Note that the project is provided "as is,"
+so the author is not responsible for your usage of it.
+See the [LICENSE] file for more details.
+
 [attribute-assume]: https://en.cppreference.com/w/cpp/language/attributes/assume
+[CeCILL]: http://www.cecill.info/licences/Licence_CeCILL_V2-en.html
+[CImg]: https://cimg.eu
 [clang-18]: https://releases.llvm.org/18.1.0/tools/clang/docs/ReleaseNotes.html
 [clang-cpp-status]: https://clang.llvm.org/cxx_status.html
 [clang18-dockerfile]: ./Dockerfile
@@ -141,6 +210,7 @@ docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
 [doctest]: https://github.com/doctest/doctest
 [jetbrains-docker-toolchain]: https://www.jetbrains.com/help/clion/clion-toolchains-in-docker.html
 [libcpp-18]: https://releases.llvm.org/18.1.0/projects/libcxx/docs/ReleaseNotes.html
+[LICENSE]: https://github.com/definability/dynamic_programming_chain_cpp/blob/master/LICENSE
 [md-subscript-operator]: https://www.open-std.org/jtc1/sc22/wg21/docs/papers/2021/p2128r5.pdf
 [mdspan]: https://en.cppreference.com/w/cpp/container/mdspan
 [medium-part1]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-1-the-problem-78bcf0250257
@@ -148,5 +218,11 @@ docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
 [medium-part3]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-3-preparing-for-implementation-bdceb5bf1345
 [medium-part4]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-4-the-implementation-35b55a528afb
 [medium-part5]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-5-testing-38e0aa01f18b
+[medium-stereo-vision]: https://medium.com/@valeriy.krygin/scanline-stereo-vision-85ff252ec521
+[middlebury]: https://vision.middlebury.edu/stereo/data/
+[MIT License]: https://choosealicense.com/licenses/mit
 [ninja-1.10]: https://github.com/ninja-build/ninja/releases/tag/v1.10.0
+[third_party]: https://github.com/definability/dynamic_programming_chain_cpp/tree/master/third_party
+[third_party/CImg]: https://github.com/definability/dynamic_programming_chain_cpp/tree/master/third_party/CImg
+[third_party/CImg/Licence_CeCILL_V2-en.txt]: https://github.com/definability/dynamic_programming_chain_cpp/tree/master/third_party/CImg/Licence_CeCILL_V2-en.txt
 [ubuntu-24.04]: https://ubuntu.com/blog/tag/ubuntu-24-04-lts

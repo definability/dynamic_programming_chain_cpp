@@ -15,3 +15,10 @@ target_link_libraries(dynamic_programming_fast PRIVATE dynamic_programming_trait
 add_library(dynamic_programming)
 target_sources(dynamic_programming PUBLIC FILE_SET CXX_MODULES FILES dynamic_programming.ixx)
 target_link_libraries(dynamic_programming PRIVATE dynamic_programming_traits dynamic_programming_fast dynamic_programming_compact)
+
+add_library(simple_semiring)
+target_sources(simple_semiring PUBLIC FILE_SET CXX_MODULES FILES simple_semiring.ixx)
+
+add_library(operators)
+target_sources(operators PUBLIC FILE_SET CXX_MODULES FILES operators.ixx)
+target_link_libraries(operators)

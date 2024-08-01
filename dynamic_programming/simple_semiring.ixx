@@ -1,6 +1,5 @@
 module;
 
-#include <concepts>
 #include <numeric>
 
 export module simple_semiring;
