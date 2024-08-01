@@ -1,7 +1,6 @@
 module;
 
 #include <array>
-#include <cstdint>
 #include <concepts>
 #include <mdspan>
 
@@ -15,7 +14,8 @@ import dynamic_programming;
   DO(std::equality_comparable, R),        \
   DO(Semiring<R>, ProblemSemiring),       \
   DO(std::size_t, nodes),                 \
-  DO(std::size_t, labels)
+  DO(std::size_t, labels),                \
+  DO(std::size_t, edges_rank)
 
 #define TEMPLATE_PARAMETER(Type, value) Type value
 #define TEMPLATE_ARGUMENT(Type, value) value
@@ -24,7 +24,7 @@ import dynamic_programming;
 #define TEMPLATE_ARGUMENTS ENUMERATE_TEMPLATE_PARAMETERS(TEMPLATE_ARGUMENT)
 
 template<TEMPLATE_PARAMETER_LIST>
-requires(nodes > 0 and labels > 0)
+requires(nodes > 0 and labels > 0 and (edges_rank == 2 or edges_rank == 3))
 class DynamicProgrammingProblemBase;
 
 export template<TEMPLATE_PARAMETER_LIST>
@@ -47,7 +47,7 @@ export struct AlgorithmTypes
 
 export template<typename Type, TEMPLATE_PARAMETER_LIST>
 using DynamicProgrammingProblem =
-  ProblemChooser<Type>::template type<TEMPLATE_ARGUMENTS>;
+  typename ProblemChooser<Type>::template type<TEMPLATE_ARGUMENTS>;
 
 template<TEMPLATE_PARAMETER_LIST>
 class DynamicProgrammingProblemCompact
@@ -92,12 +92,16 @@ private:
 };
 
 template<TEMPLATE_PARAMETER_LIST>
-requires(nodes > 0 and labels > 0)
+requires(nodes > 0 and labels > 0 and (edges_rank == 2 or edges_rank == 3))
 class DynamicProgrammingProblemBase
 {
 private:
   using VerticesExtents = std::extents<NodeIndex, nodes, labels>;
-  using EdgesExtents = std::extents<NodeIndex, nodes - 1, labels, labels>;
+  using EdgesExtents = std::conditional_t<
+    edges_rank == 2,
+    std::extents<NodeIndex, labels, labels>,
+    std::extents<NodeIndex, nodes - 1, labels, labels>
+  >;
 public:
   Vertices<R, VerticesExtents> get_vertices()
   {

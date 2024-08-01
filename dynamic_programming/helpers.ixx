@@ -7,8 +7,11 @@ module;
 
 export module dynamic_programming:helpers;
 
-export void validate_input(auto&& vertices, auto&& edges, auto&& labelling)
+export template<typename Vertices, typename Edges>
+void validate_input(Vertices&& vertices, Edges&& edges, auto&& labelling)
 {
+  static constexpr auto edges_rank = std::decay_t<Edges>::extents_type::rank();
+
   if (vertices.extent(0) == 0)
   {
     throw std::invalid_argument{"The number of nodes must not be zero"};
@@ -17,22 +20,25 @@ export void validate_input(auto&& vertices, auto&& edges, auto&& labelling)
   {
     throw std::invalid_argument{"The number of labels must not be zero"};
   }
-  if (edges.extent(0) + 1 != vertices.extent(0))
+  if constexpr (edges_rank == 3)
   {
-    throw std::invalid_argument{"Edges must come from exactly N-1 nodes"};
+    if (edges.extent(0) + 1 != vertices.extent(0))
+    {
+      throw std::invalid_argument{"Edges must come from exactly N-1 nodes"};
+    }
   }
-  if (edges.extent(1) != vertices.extent(1))
+  if (edges.extent(edges_rank - 2) != vertices.extent(1))
   {
     throw std::invalid_argument{
       "Vertices and get_edges must have the same number of labels"};
   }
-  if (edges.extent(1) != edges.extent(2))
+  if (edges.extent(edges_rank - 2) != edges.extent(edges_rank - 1))
   {
     throw std::invalid_argument{
       "Edges must have the same number of input and output labels"};
   }
 
-  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+  using Size = typename std::decay_t<Vertices>::extents_type::size_type;
   if (labelling.size() != static_cast<Size>(vertices.extent(0)))
   {
     throw std::invalid_argument{
@@ -68,4 +74,22 @@ export auto inner_product(
     semiring.adder,
     semiring.multiplexer
   );
+}
+
+export template<typename Edges>
+auto get_edge_slice(Edges&& edges, auto&& current_node, auto&& label)
+{
+  static constexpr auto edges_rank = std::decay_t<Edges>::extents_type::rank();
+  if constexpr (edges_rank == 2)
+  {
+    return get_slice(edges, label);
+  }
+  else if constexpr (edges_rank == 3)
+  {
+    return get_slice(edges, current_node, label);
+  }
+  else
+  {
+    static_assert(false, "Only 2D and 3D spans are allowed for edges");
+  }
 }

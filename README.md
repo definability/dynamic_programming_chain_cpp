@@ -17,13 +17,9 @@ with all needed dependencies included.
 You can build it in Linux terminal by executing the following command
 from the root directory of this project:
 ```shell
-docker build -t debian-clang:18 .
+docker build -t ubuntu-clang:18 .
 ```
-It is based on [Debian Unstable][debian-sid-packages]
-because [Debian Trixie][debian-trixie-packages]
-does not provide the needed packages.
-I hope to not forget updating this repository
-once an OS with the needed tools has a unique name.
+It is based on [Ubuntu 24.04 LTS][ubuntu-24.04].
 Below is the explanation of the contents of the Docker image.
 
 The project requires a compiler and a standard library
@@ -62,7 +58,7 @@ cmake --build build
 You may see warnings about [assume][attribute-assume] attribute
 not being supported, which is okay at the moment.
 Let us wait for [Clang 19][clang-cpp-status] to be included
-in a Debian repository.
+in an Ubuntu repository.
 
 ### Docker
 
@@ -70,7 +66,7 @@ To set up and build the project in Docker container,
 I recommend you using your current user id and directory
 to avoid root-owned files and keep you absolute paths right:
 ```shell
-docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) debian-clang:18 bash -c " \
+docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
   cd $(pwd) && \
   cmake \
     -S . \
@@ -118,7 +114,7 @@ Run the tests
 
 You can do this in Docker container:
 ```shell
-docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) debian-clang:18 bash -c " \
+docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) ubuntu-clang:18 bash -c " \
   cd $(pwd) && \
   cmake \
     -S . \
@@ -141,8 +137,6 @@ docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) debian-clang:18 bash -c " \
 [compatibility-cpp20]: https://en.cppreference.com/w/cpp/compiler_support/20
 [compatibility-cpp23]: https://en.cppreference.com/w/cpp/compiler_support/23
 [cpp-modules]: https://en.cppreference.com/w/cpp/language/modules
-[debian-sid-packages]: https://packages.debian.org/sid/devel/
-[debian-trixie-packages]: https://packages.debian.org/trixie/devel/
 [deducing-this]: https://en.cppreference.com/w/cpp/language/member_functions#Explicit_object_member_functions
 [doctest]: https://github.com/doctest/doctest
 [jetbrains-docker-toolchain]: https://www.jetbrains.com/help/clion/clion-toolchains-in-docker.html
@@ -155,3 +149,4 @@ docker run --rm -u ${UID}:${UID} -v $(pwd):$(pwd) debian-clang:18 bash -c " \
 [medium-part4]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-4-the-implementation-35b55a528afb
 [medium-part5]: https://medium.com/@valeriy.krygin/dynamic-programming-on-chain-graphs-part-5-testing-38e0aa01f18b
 [ninja-1.10]: https://github.com/ninja-build/ninja/releases/tag/v1.10.0
+[ubuntu-24.04]: https://ubuntu.com/blog/tag/ubuntu-24-04-lts

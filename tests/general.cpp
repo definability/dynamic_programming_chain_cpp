@@ -26,7 +26,7 @@ TEST_CASE_TEMPLATE("or-and: two nodes and two labels", TypesTuple, TYPES)
   using CurrentSemiring = std::tuple_element_t<0, TypesTuple>;
   using R = std::tuple_element_t<1, TypesTuple>;
   using Algorithm = std::tuple_element_t<2, TypesTuple>;
-  DynamicProgrammingProblem<Algorithm, int, int, R, CurrentSemiring, 2, 2> problem;
+  DynamicProgrammingProblem<Algorithm, int, int, R, CurrentSemiring, 2, 2, 3> problem;
   problem.get_vertices()[0u, 0u] = false;
   problem.get_vertices()[0u, 1u] = true;
   problem.get_vertices()[1u, 0u] = true;
@@ -35,6 +35,31 @@ TEST_CASE_TEMPLATE("or-and: two nodes and two labels", TypesTuple, TYPES)
   problem.get_edges()[0u, 0u, 1u] = true;
   problem.get_edges()[0u, 1u, 0u] = true;
   problem.get_edges()[0u, 1u, 1u] = false;
+  problem.solve();
+
+  CHECK_EQ(problem.cost, true);
+  CHECK_EQ(problem.get_vertices()[0u, 0u], false);
+  CHECK_EQ(problem.get_vertices()[0u, 1u], true);
+  CHECK_EQ(problem.get_vertices()[1u, 0u], true);
+  CHECK_EQ(problem.get_vertices()[1u, 1u], true);
+  CHECK_EQ(problem.get_labelling()[0u], 1);
+  CHECK_EQ(problem.get_labelling()[1u], 0);
+}
+
+TEST_CASE_TEMPLATE("or-and: two nodes, two labels, 2D edges", TypesTuple, TYPES)
+{
+  using CurrentSemiring = std::tuple_element_t<0, TypesTuple>;
+  using R = std::tuple_element_t<1, TypesTuple>;
+  using Algorithm = std::tuple_element_t<2, TypesTuple>;
+  DynamicProgrammingProblem<Algorithm, int, int, R, CurrentSemiring, 2, 2, 2> problem;
+  problem.get_vertices()[0u, 0u] = false;
+  problem.get_vertices()[0u, 1u] = true;
+  problem.get_vertices()[1u, 0u] = true;
+  problem.get_vertices()[1u, 1u] = true;
+  problem.get_edges()[0u, 0u] = true;
+  problem.get_edges()[0u, 1u] = true;
+  problem.get_edges()[1u, 0u] = true;
+  problem.get_edges()[1u, 1u] = false;
   problem.solve();
 
   CHECK_EQ(problem.cost, true);

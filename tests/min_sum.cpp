@@ -47,13 +47,14 @@ struct ProblemFromTupleHelper
     R,
     MinPlusSemiring<R>,
     nodes,
-    labels
+    labels,
+    3
   >;
 };
 
 template<typename TypesTuple, std::size_t nodes, std::size_t labels>
 using ProblemFromTuple =
-  ProblemFromTupleHelper<TypesTuple, nodes, labels>::Problem;
+  typename ProblemFromTupleHelper<TypesTuple, nodes, labels>::Problem;
 
 TEST_CASE_TEMPLATE("one node and one label", TypesTuple, TYPES)
 {

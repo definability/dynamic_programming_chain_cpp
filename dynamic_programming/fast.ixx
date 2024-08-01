@@ -2,7 +2,6 @@
 /// a time-efficient dynamic programming algorithm on an arbitrary semiring.
 module;
 
-#include <concepts>
 #include <mdspan>
 #include <numeric>
 #include <span>
@@ -64,7 +63,7 @@ auto calculate_cost(
   auto&& local_best_labels,
   auto&& labelling)
 {
-  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+  using Size = typename std::decay_t<decltype(vertices)>::extents_type::size_type;
 
   for (auto next_node = static_cast<Size>(vertices.extent(0) - 1); next_node > 0; --next_node)
   {
@@ -76,7 +75,7 @@ auto calculate_cost(
     for (Size current_node_label{};
          current_node_label < static_cast<Size>(vertices.extent(1)); ++current_node_label)
     {
-      auto&& current_label_edges = get_slice(
+      auto&& current_label_edges = get_edge_slice(
         edges, current_node, current_node_label
       );
       Label next_node_label{0};

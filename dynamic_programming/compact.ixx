@@ -2,8 +2,6 @@
 /// a memory-efficient dynamic programming algorithm on an arbitrary semiring.
 module;
 
-#include <concepts>
-#include <mdspan>
 #include <numeric>
 #include <span>
 
@@ -34,7 +32,7 @@ void dynamic_programming_compact(
 
 auto calculate_cost(auto&& semiring, auto&& vertices, auto&& edges)
 {
-  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+  using Size = typename std::decay_t<decltype(vertices)>::extents_type::size_type;
 
   [[assume(vertices.extent(0) >= 1)]]
   auto next_node = static_cast<Size>(vertices.extent(0)) - Size{1};
@@ -47,7 +45,7 @@ auto calculate_cost(auto&& semiring, auto&& vertices, auto&& edges)
 
     for (auto label = Size{0}; label < static_cast<Size>(vertices.extent(1)); ++label)
     {
-      auto&& current_label_edges = get_slice(edges, current_node, label);
+      auto&& current_label_edges = get_edge_slice(edges, current_node, label);
       auto&& inner_product_result = inner_product(
         semiring,
         current_label_edges,
@@ -76,7 +74,7 @@ void calculate_labelling(
   auto&& labelling,
   auto&& cost)
 {
-  using Size = std::decay_t<decltype(vertices)>::extents_type::size_type;
+  using Size = typename std::decay_t<decltype(vertices)>::extents_type::size_type;
 
   {
     auto current_node = Size{};
@@ -102,8 +100,11 @@ void calculate_labelling(
     auto&& current_node = next_node - 1;
 
     auto&& current_node_label = labelling[current_node];
-    auto&& current_label_edges = get_slice(
-      edges, current_node, current_node_label);
+    auto&& current_label_edges = get_edge_slice(
+      edges,
+      current_node,
+      current_node_label
+    );
     auto&& inner_product_result = inner_product(
       semiring, current_label_edges, next_node_vertices);
     for (Size next_node_label{};
