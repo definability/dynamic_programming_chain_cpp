@@ -49,11 +49,12 @@ template<typename R, typename Label> struct SolverBase
     {
       for (auto column = 0zu; column < self.width; ++column)
       {
-        for (auto disparity = 0zu; disparity <= std::min(column, self.maximum_disparity); ++disparity)
+        const auto right_pixel = std::min(self.width, column + disparity_levels);
+        for (auto disparity = 0zu; column + disparity < right_pixel; ++disparity)
         {
           vertices[column, disparity] = std::abs(
-            static_cast<R>(left_image(column, row))
-            - static_cast<R>(right_image(column - disparity, row)));
+            static_cast<R>(left_image(column + disparity, row))
+            - static_cast<R>(right_image(column, row)));
         }
       }
 
@@ -62,9 +63,9 @@ template<typename R, typename Label> struct SolverBase
       for (auto column = 0zu; column < self.width; ++column)
       {
         disparity_map(column, row) = static_cast<uint8_t>(
-          static_cast<float>(labelling[column]) * static_cast<float>(
-            std::numeric_limits<uint8_t>::max()) / static_cast<float>(
-            self.maximum_disparity));
+          static_cast<uint32_t>(labelling[column]) *
+          static_cast<uint32_t>(std::numeric_limits<uint8_t>::max()) /
+          static_cast<uint32_t>(self.maximum_disparity));
       }
     }
   }
